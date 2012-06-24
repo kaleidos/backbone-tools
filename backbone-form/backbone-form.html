@@ -16,7 +16,7 @@
     <div class="ajax-validation">
         <h3>Simple ajax validation</h3>
 
-        <form action="sample-errors.js" method="get" id="simple">
+        <form action="" method="get" id="simple">
             <p>
                 <label>Username:</label>
                 <input type="text" name="username" />
@@ -40,7 +40,7 @@
 
         <ul id="global-errors" style="display:none"></ul>
 
-        <form action="sample-errors.js" method="get" id="global">
+        <form action="" method="get" id="global">
             <p>
                 <label>Username:</label>
                 <input type="text" name="username" />
@@ -64,7 +64,7 @@
 
         <ul id="allglobal-errors" style="display:none"></ul>
 
-        <form action="sample-errors.js" method="get" id="allglobal">
+        <form action="" method="get" id="allglobal">
             <p>
                 <label>Username:</label>
                 <input type="text" name="username" />
@@ -110,7 +110,7 @@
 
             initialize: function() {
                 _.bindAll(this, 'onFormSubmit', 'onClearClicked');
-                this.form = new Form({el: $("#simple")});
+                this.form = new Kaleidos.Form({el: $("#simple")});
             },
 
             onFormSubmit: function(event) {
@@ -137,7 +137,7 @@
 
             initialize: function() {
                 _.bindAll(this, 'onFormSubmit', 'onClearClicked');
-                this.form = new Form({el: $("#global")});
+                this.form = new Kaleidos.Form({el: $("#global")});
                 this.form.setGlobalErrorsBox($("#global-errors"));
             },
 
@@ -163,7 +163,7 @@
 
             initialize: function() {
                 _.bindAll(this, 'onFormSubmit', 'onClearClicked');
-                this.form = new Form({el: $("#allglobal"), fieldErrorsOnGlobalBox: true});
+                this.form = new Kaleidos.Form({el: $("#allglobal"), fieldErrorsOnGlobalBox: true});
                 this.form.setGlobalErrorsBox($("#allglobal-errors"));
             },
 
@@ -180,5 +180,6 @@
         var login3 = new LoginTest3({
             el:$(".ajax-validation-allglobal"),
         });
+
     </script>
 </body>

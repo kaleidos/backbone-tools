@@ -16,6 +16,7 @@
  *  * 24-06-2012 - Remove client validation. (0.4)
  *               - Add envents
  *               - Code improvements.
+ *               - Add Kaleidos namespace.
  *
  *
  * Author: Andrei Antoukh <andrei.antoukh@kaleidos.net>
@@ -27,11 +28,12 @@ if (window.gettext === undefined) {
     window.gettext = function(data) { return data; }
 }
 
-var Form = Backbone.View.extend({
-    /* CONSTRUCTOR
-     * 
-     * This method by default need one parameter: `el`.
-     * Aditionally, you can pass all that defined on defaults dict. */
+/* Create namespace if not exists */
+if (window.Kaleidos === undefined) {
+    window.Kaleidos = {};
+}
+
+Kaleidos.Form = Backbone.View.extend({
 
     defaults: {
         'resetOnInit': false,
@@ -39,8 +41,11 @@ var Form = Backbone.View.extend({
         'fieldErrorsOnGlobalBox': false,
         'higlight': 'error-field'
     },
-
-    defaultHiglightClass: 'error-field',
+    
+    /* CONSTRUCTOR
+     * 
+     * This method by default need one parameter: `el`.
+     * Aditionally, you can pass all that defined on defaults dict. */
 
     initialize: function() {
         _.bindAll(this);

@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <title>Lightbox</title>
+        <link rel="stylesheet" media="all" href="../css/lightbox.css" />
+        <script type="text/javascript" src="../jquery.min.js"></script>    
+        <script type="text/javascript" src="../underscore-min.js"></script>
+        <script type="text/javascript" src="../backbone-min.js"></script>
+        <script type="text/javascript" src="../lightbox.js"></script>
+        <script type="text/javascript" src="backbone-lightbox.js"></script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            } 
+            .klightbox { background-color: #FFF; padding: 20px; border: 1px solid #eee;}
+        </style>
+        <script>
+            $(document).ready(function(){
+                Kaleidos.lightbox = new Kaleidos.Lightbox({
+                    el:$("#lightbox1"),
+                    width: 600
+                });
+                
+                $("#openlightbox").click(function(e){
+                    e.preventDefault();
+                    Kaleidos.lightbox.open();
+                });
+
+                Kaleidos.lightbox2 = new Kaleidos.Lightbox({
+                    el: $("#lightbox2"),
+                    fadeIn: true,
+                    fadeOut: true,
+                    width: 700
+                });
+
+                $("#openlightbox2").click(function(e){
+                    e.preventDefault();
+                    Kaleidos.lightbox2.open();
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <a href="" id="openlightbox">Open</a>
+        <a href="" id="openlightbox2">Open</a>
+        <div id="ajax-loader">
+            <img src="../images/ajax-loader.gif" />
+        </div>
+        <div id="overlay"></div>
+        <div id="lightbox1" class="klightbox">
+            <p><a class="close" href="">Close</a></p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempus eleifend accumsan. Suspendisse potenti. Sed ultricies, orci vitae volutpat suscipit, nisl lacus hendrerit nulla, ac lobortis lacus tortor quis est. Morbi tellus justo, laoreet eget consectetur vehicula, tempus in velit. Praesent fringilla lacus id nisi accumsan ac ornare est vehicula. Donec eget magna libero, a volutpat dolor. Mauris elementum faucibus felis, sit amet venenatis libero hendrerit eu. Cras justo erat, ultricies nec iaculis et, facilisis quis erat. Duis interdum porta est fermentum euismod. Nam ante dolor, facilisis ut eleifend eget, congue non ante.</p>
+            <p>Suspendisse ac ante ligula, id hendrerit neque. Sed vel ornare magna. Suspendisse tincidunt, est sodales sollicitudin laoreet, mi dolor accumsan nibh, in semper quam orci in neque. Sed justo odio, porta id varius id, auctor eu odio. Cras ornare interdum diam ut pharetra. Proin arcu tellus, dapibus eget vulputate ac, ultricies et ligula. Aliquam erat volutpat. Fusce convallis lacus in nulla elementum fermentum. Nulla porttitor arcu sed lorem interdum ac bibendum ipsum pulvinar. Vivamus ut libero felis. Integer gravida, augue eget facilisis posuere, augue neque vulputate nunc, in iaculis mi elit quis ligula.</p>
+            <p>Etiam adipiscing fringilla urna, euismod sodales nisl facilisis a. Donec laoreet, turpis at blandit scelerisque, urna lorem aliquet nunc, vitae varius ante velit vel elit. Maecenas vehicula venenatis velit in suscipit. Morbi est urna, iaculis sed auctor eget, suscipit et erat. Ut vulputate luctus scelerisque. Aliquam erat volutpat. Aliquam eu mauris vitae tellus facilisis adipiscing. Duis sollicitudin elit non est pretium at aliquet enim rhoncus. Sed id nibh et ipsum euismod cursus eget vel turpis. Etiam sed tortor turpis.</p>
+            <p>Curabitur ut purus est. Duis vitae lobortis sapien. Mauris vel metus nec enim cursus eleifend imperdiet vitae turpis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam nisl ligula, condimentum id commodo ut, consequat sit amet nisl. Phasellus congue, ante vitae fringilla tempor, ligula eros lacinia augue, nec commodo elit arcu at erat. Morbi sed lorem ligula. Nullam mollis pellentesque tincidunt. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            <p>Mauris ut dignissim tellus. Fusce vitae lectus eu lectus varius tempor id vitae sem. Etiam vitae euismod elit. Vestibulum nibh dolor, aliquet sit amet pretium sed, tempor in odio. Sed viverra urna nisi, eget dignissim lectus. Praesent pharetra rhoncus libero, a cursus nunc ultrices non. Ut nec felis ut elit iaculis adipiscing vitae pellentesque magna.</p>            
+        </div>
+        
+        <div id="lightbox2" class="klightbox">
+            <p><a class="close" href="">Close</a></p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tempus eleifend accumsan. Suspendisse potenti. Sed ultricies, orci vitae volutpat suscipit, nisl lacus hendrerit nulla, ac lobortis lacus tortor quis est. Morbi tellus justo, laoreet eget consectetur vehicula, tempus in velit. Praesent fringilla lacus id nisi accumsan ac ornare est vehicula. Donec eget magna libero, a volutpat dolor. Mauris elementum faucibus felis, sit amet venenatis libero hendrerit eu. Cras justo erat, ultricies nec iaculis et, facilisis quis erat. Duis interdum porta est fermentum euismod. Nam ante dolor, facilisis ut eleifend eget, congue non ante.</p>
+            <p>Suspendisse ac ante ligula, id hendrerit neque. Sed vel ornare magna. Suspendisse tincidunt, est sodales sollicitudin laoreet, mi dolor accumsan nibh, in semper quam orci in neque. Sed justo odio, porta id varius id, auctor eu odio. Cras ornare interdum diam ut pharetra. Proin arcu tellus, dapibus eget vulputate ac, ultricies et ligula. Aliquam erat volutpat. Fusce convallis lacus in nulla elementum fermentum. Nulla porttitor arcu sed lorem interdum ac bibendum ipsum pulvinar. Vivamus ut libero felis. Integer gravida, augue eget facilisis posuere, augue neque vulputate nunc, in iaculis mi elit quis ligula.</p>
+        </div>        
+    </body>
+</head>

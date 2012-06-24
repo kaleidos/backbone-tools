@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta encoding="utf-8" />
+    <title>Bacbone-Form Example</title>
+    <script type="text/javascript" src="../jquery.min.js"></script>
+    <script type="text/javascript" src="../underscore-min.js"></script>
+    <script type="text/javascript" src="../backbone-min.js"></script>
+    <script type="text/javascript" src="backbone-form.js"></script>
+    <style type="text/css">
+    .error-field { outline: 1px solid #F5A9A9; }
+    ul.errorlist { list-style: none; padding:0px; margin: 0px; color:red; }
+    </style>
+</head>
+<body>
+    <div class="ajax-validation">
+        <h3>Simple ajax validation</h3>
+
+        <form action="sample-errors.js" method="get" id="simple">
+            <p>
+                <label>Username:</label>
+                <input type="text" name="username" />
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type="password" name="password" />
+            </p>
+            <p>
+                <input type="submit" value="Save" />
+                <input type="button" class="clear" value="Clear" />
+            </p>
+        </form>
+    </div>
+
+    <hr />
+
+    <div class="ajax-validation-global">
+
+        <h3>Simple ajax validation with global messages</h3>
+
+        <ul id="global-errors" style="display:none"></ul>
+
+        <form action="sample-errors.js" method="get" id="global">
+            <p>
+                <label>Username:</label>
+                <input type="text" name="username" />
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type="password" name="password" />
+            </p>
+            <p>
+                <input type="submit" value="Save" />
+                <input type="button" class="clear" value="Clear" />
+            </p>
+        </form>
+    </div>
+
+    <hr />
+
+    <div class="ajax-validation-allglobal">
+
+        <h3>Simple ajax validation with all global messages</h3>
+
+        <ul id="allglobal-errors" style="display:none"></ul>
+
+        <form action="sample-errors.js" method="get" id="allglobal">
+            <p>
+                <label>Username:</label>
+                <input type="text" name="username" />
+            </p>
+            <p>
+                <label>Password:</label>
+                <input type="password" name="password" />
+            </p>
+            <p>
+                <input type="submit" value="Save" />
+                <input type="button" class="clear" value="Clear" />
+            </p>
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+        /* Simple Validate */
+        
+        var response1 = {
+            "errors": {
+                "form": {
+                    "username": ["This field is required"],
+                    "password": ["This field is required"],
+                },
+                "global": [
+                    "Unexpexted error1",
+                    "Unexpexted error2"
+                ],
+                "fields": {
+                    "username": { "name": "Username" },
+                    "password": { "name": "Password" }
+                }
+            },
+            "success": false
+        };
+
+        var LoginTest1 = Backbone.View.extend({
+            events: {
+                'click .clear': 'onClearClicked',
+                'submit #simple': 'onFormSubmit'
+            },
+
+            initialize: function() {
+                _.bindAll(this, 'onFormSubmit', 'onClearClicked');
+                this.form = new Form({el: $("#simple")});
+            },
+
+            onFormSubmit: function(event) {
+                event.preventDefault();
+                this.form.setErrors(response1.errors);
+            },
+
+            onClearClicked: function() {
+                this.form.clear();
+            }
+        });
+
+        var login1 = new LoginTest1({el:$(".ajax-validation")});
+
+        
+        
+        /* Validation with global errors */
+
+        var LoginTest2 = Backbone.View.extend({
+            events: {
+                'click .clear': 'onClearClicked',
+                'submit #global': 'onFormSubmit'
+            },
+
+            initialize: function() {
+                _.bindAll(this, 'onFormSubmit', 'onClearClicked');
+                this.form = new Form({el: $("#global")});
+                this.form.setGlobalErrorsBox($("#global-errors"));
+            },
+
+            onFormSubmit: function(event) {
+                event.preventDefault();
+                this.form.setErrors(response1.errors);
+            },
+
+            onClearClicked: function() {
+                this.form.clear();
+            }
+        });
+
+        var login2 = new LoginTest2({el:$(".ajax-validation-global")});
+
+        /* Validation with global errors */
+
+        var LoginTest3 = Backbone.View.extend({
+            events: {
+                'click .clear': 'onClearClicked',
+                'submit #allglobal': 'onFormSubmit'
+            },
+
+            initialize: function() {
+                _.bindAll(this, 'onFormSubmit', 'onClearClicked');
+                this.form = new Form({el: $("#allglobal"), fieldErrorsOnGlobalBox: true});
+                this.form.setGlobalErrorsBox($("#allglobal-errors"));
+            },
+
+            onFormSubmit: function(event) {
+                event.preventDefault();
+                this.form.setErrors(response1.errors);
+            },
+
+            onClearClicked: function() {
+                this.form.clear();
+            }
+        });
+
+        var login3 = new LoginTest3({
+            el:$(".ajax-validation-allglobal"),
+        });
+    </script>
+</body>

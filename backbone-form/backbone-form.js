@@ -17,6 +17,7 @@
  *               - Add envents
  *               - Code improvements.
  *               - Add Kaleidos namespace.
+ *  * 17-08-2012 - Now uses jquery .fail and .done methods.
  *
  *
  * Author: Andrei Antoukh <andrei.antoukh@kaleidos.net>
@@ -41,11 +42,11 @@ Kaleidos.Form = Backbone.View.extend({
         'fieldErrorsOnGlobalBox': false,
         'higlight': 'error-field'
     },
-    
+
     /* CONSTRUCTOR
-     * 
+     *
      * This method by default need one parameter: `el`.
-     * Aditionally, you can pass all that defined on defaults dict. */
+     * Additionally, you can pass all that defined on defaults dict. */
 
     initialize: function() {
         _.bindAll(this);
@@ -62,9 +63,14 @@ Kaleidos.Form = Backbone.View.extend({
         }
 
         this.globalErrorsBox = null;
+        this.trigger('initialize', this);
+
+        if (this.onInitialize !== undefined) {
+            this.onInitialize();
+        }
     },
 
-    /* 
+    /*
      * Remove all errors on form.
     */
 
@@ -79,6 +85,7 @@ Kaleidos.Form = Backbone.View.extend({
         if (this.options.higlight) {
             this.$("." + this.options.higlight).removeClass(this.options.higlight);
         }
+        this.trigger('clear', this);
     },
 
     /*
@@ -87,14 +94,14 @@ Kaleidos.Form = Backbone.View.extend({
 
     reset: function() {
         this.$("input[type=text], input[type=file], select, textarea").val('');
+        this.trigger("reset", this);
     },
 
     /* PRIVATE METHOD
      *
      * creates a custom XMLHttpRequest builder
-     * TODO:  make this compatible with IE
     */
-    
+
     getXhr: function() {
         var xhr = new XMLHttpRequest();
         xhr.upload.addEventListener("progress", this.uploadProgress);
@@ -103,7 +110,7 @@ Kaleidos.Form = Backbone.View.extend({
 
     /* PRIVATE METHOD
      *
-     * Calculate a percentage of form upload progress and trigger `progress` 
+     * Calculate a percentage of form upload progress and trigger `progress`
      * event with a current percentaje.
     */
 
@@ -117,14 +124,14 @@ Kaleidos.Form = Backbone.View.extend({
 
     ieSubmitFallback: function(opts) {
         var url = opts.url || this.$el.attr('action');
-        var type = opts.type || this.$el.attr('type') || 'post';
+        var type = opts.type || this.$el.attr('method') || 'post';
 
 
         // Remove old iframe
         this.$el.parent().find("#upload_iframe").remove();
-        
+
         // Create new iframe
-        var iframe = document.createElement("iframe");
+        var iframe = document.createElement('<iframe  name="upload_iframe">');
         iframe.setAttribute("id", "upload_iframe");
         iframe.setAttribute("name", "upload_iframe");
         iframe.setAttribute("width", "0");
@@ -132,16 +139,17 @@ Kaleidos.Form = Backbone.View.extend({
         iframe.setAttribute("border", "0");
         iframe.setAttribute("style", "width: 0; height: 0; border: none;");
 
+        var self = this;
         this.el.parentNode.appendChild(iframe);
         this.$el.attr('target', 'upload_iframe');
 
         var iframeId = document.getElementById("upload_iframe");
-        
+
         var eventHandler = function () {
             var content = null;
             if (iframeId.detachEvent) iframeId.detachEvent("onload", eventHandler);
             else iframeId.removeEventListener("load", eventHandler, false);
- 
+
             // Message from server...
             if (iframeId.contentDocument) {
                 content = iframeId.contentDocument.body.innerText;
@@ -158,16 +166,16 @@ Kaleidos.Form = Backbone.View.extend({
                     data = JSON.parse(content);
                 }
 
-                this.trigger("success", JSON.parse(content));
+                self.trigger("success", JSON.parse(content));
                 if (opts.success !== undefined) {
                     opts.success(data);
                 }
             }
- 
-            // Del the iframe...
-            setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
+
+            //setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
+            iframeId.parentNode.removeChild(iframeId);
         }
- 
+
         if (iframeId.addEventListener) iframeId.addEventListener("load", eventHandler, true);
         if (iframeId.attachEvent) iframeId.attachEvent("onload", eventHandler);
 
@@ -175,27 +183,27 @@ Kaleidos.Form = Backbone.View.extend({
     },
 
     /* submit(opts):  Makes ajax submit of the asociated form
-     * 
+     *
      * Posible params:
      *
-     *   `success`:  
-     *      
-     *      this is a success callback, receives a response.  If this parameter 
+     *   `success`:
+     *
+     *      this is a success callback, receives a response.  If this parameter
      *      is undefined, fallback to use self implemented success method.
      *
      *   `error`
-     *      
+     *
      *      same as `success` but for error.
      *
      *   `dataType`
-     *      
+     *
      *      this is a jquery `dataType` parameter, by default is set to `json`.
      *
      *   `url`
-     *      
+     *
      *      url to send a form data, by default is a form action.
      *
-     *   `type` 
+     *   `type`
      *
      *      is a request type, by default, uses form type attribute.
      *
@@ -205,6 +213,14 @@ Kaleidos.Form = Backbone.View.extend({
     */
 
     submit: function(opts) {
+        this.trigger("pre-submit", this);
+
+        if (this.on_submit_process === true) {
+            return;
+        }
+
+        this.on_submit_process = true;
+
         if (opts === undefined) {
             opts = {};
         }
@@ -223,7 +239,7 @@ Kaleidos.Form = Backbone.View.extend({
         if (this.$("input[type=file]").length > 0) {
             has_files = true;
         }
-        
+
         // Check IE
         if (navigator.appVersion.indexOf("MSIE") != -1) {
             is_ie = true;
@@ -234,7 +250,7 @@ Kaleidos.Form = Backbone.View.extend({
         }
 
         var url = opts.url || this.$el.attr('action');
-        var type = opts.type || this.$el.attr('type') || 'post';
+        var type = opts.type || this.$el.attr('method') || 'post';
         var dataType = opts.dataType || 'json';
         var enctype = opts.enctype || this.$el.attr('enctype') || false;
         var jquery_lowlevel_opts = opts.jqueryOpts || {};
@@ -244,19 +260,7 @@ Kaleidos.Form = Backbone.View.extend({
         var ajax_params = {
             url: url,
             type: type,
-            dataType: dataType,
-            success: function(data) {
-                self.trigger("success", data);
-                if (opts.success !== undefined) {
-                    opts.success(data);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                self.trigger("error", jqXHR, textStatus, errorThrown);
-                if (opts.error !== undefined) {
-                    opts.error(jqXHR, textStatus, errorThrown);
-                }
-            }
+            dataType: dataType
         };
 
         if (!is_ie) _.extend(ajax_params, {xhr: this.getXhr});
@@ -274,7 +278,29 @@ Kaleidos.Form = Backbone.View.extend({
 
         ajax_params = _.extend(ajax_params, jquery_lowlevel_opts);
 
-        return $.ajax(ajax_params);
+        var success = function(data, _text, jq) {
+            self.trigger("success", data);
+            if (opts.success !== undefined) {
+                opts.success(data);
+            }
+        };
+
+        var error = function(jqXHR, textStatus, errorThrown) {
+            self.trigger("error", jqXHR, textStatus, errorThrown);
+            if (opts.error !== undefined) {
+                opts.error(jqXHR, textStatus, errorThrown);
+            }
+        };
+
+        var jqXHR = $.ajax(ajax_params);
+        jqXHR.done(success);
+        jqXHR.fail(error);
+        jqXHR.complete(function(jq, _status) {
+            self.trigger("complete", self, jq, _status);
+            self.on_submit_process = false;
+        });
+
+        return jqXHR;
     },
 
     /* collectData(opts)
@@ -289,19 +315,19 @@ Kaleidos.Form = Backbone.View.extend({
      *
      *      with this parameter force user of jquery serialize on case if a form is multipart.
     */
-    
+
     collectData: function(opts) {
         if (opts === undefined) { opts = {}; }
         opts = _.extend({}, this.defaults, this.options, opts);
 
-        if (opts.forceSerialize === undefined) { 
+        if (opts.forceSerialize === undefined) {
             if (this.options.forceSerialize !== undefined) {
                 opt.forceSerialize = this.options.forceSerialize;
             } else {
-                opts.forceSerialize = false; 
+                opts.forceSerialize = false;
             }
         }
-        
+
         if (!opts.ignoreFiles) {
             if (this.$el.attr('enctype') === 'multipart/form-data' && !opts.forceSerialize) {
                 if (window.FormData !== undefined) {
@@ -312,7 +338,7 @@ Kaleidos.Form = Backbone.View.extend({
 
         return this.$el.serialize();
     },
-    
+
     /* PRIVATE METHOD
      *
      * Return all fields on current associated form.
@@ -326,7 +352,7 @@ Kaleidos.Form = Backbone.View.extend({
 
         return _fields;
     },
-    
+
     searchField: function(key) {
         return this.$("[name='" + key + "']");
     },
@@ -368,7 +394,7 @@ Kaleidos.Form = Backbone.View.extend({
             var field_name = field.attr('name');
 
             self.higlight(field);
-            
+
             if (errors.fields !== undefined) {
                 if (errors.fields[field_name] !== undefined) {
                     field_name = errors.fields[field_name].name;
@@ -392,7 +418,7 @@ Kaleidos.Form = Backbone.View.extend({
 
     /* setErrors(errors)
      *
-     * Draw dinamicaly all errors returned by `render_json_error` from 
+     * Draw dinamicaly all errors returned by `render_json_error` from
      * `django-superview`
      *
     */

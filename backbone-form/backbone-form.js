@@ -35,7 +35,6 @@ if (window.Kaleidos === undefined) {
 }
 
 Kaleidos.Form = Backbone.View.extend({
-
     defaults: {
         'resetOnInit': false,
         'clearOnInit': false,

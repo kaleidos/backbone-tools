@@ -34,6 +34,24 @@ if (window.Kaleidos === undefined) {
     window.Kaleidos = {};
 }
 
+if (window.getCookie === undefined) {
+    window.getCookie = function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    };
+}
+
 Kaleidos.Form = Backbone.View.extend({
     defaults: {
         'resetOnInit': false,
@@ -125,21 +143,31 @@ Kaleidos.Form = Backbone.View.extend({
         var url = opts.url || this.$el.attr('action');
         var type = opts.type || this.$el.attr('method') || 'post';
 
+        var cookie = getCookie('csrftoken');
+        if (cookie !== null && cookie.length > 0) {
+            if (this.$("[name=csrfmiddlewaretoken]").length > 0) {
+                this.$("[name=csrfmiddlewaretoken]").val(getCookie('csrftoken'));
+            } else {
+                var hiddenCsrf = this.make("input",
+                    {"type": "hidden", "name": "csrfmiddlewaretoken", "value": getCookie('csrftoken')});
+                this.$el.append(hiddenCsrf);
+            }
+        }
 
         // Remove old iframe
         this.$el.parent().find("#upload_iframe").remove();
 
         // Create new iframe
-        var iframe = document.createElement('<iframe  name="upload_iframe">');
-        iframe.setAttribute("id", "upload_iframe");
-        iframe.setAttribute("name", "upload_iframe");
-        iframe.setAttribute("width", "0");
-        iframe.setAttribute("height", "0");
-        iframe.setAttribute("border", "0");
-        iframe.setAttribute("style", "width: 0; height: 0; border: none;");
+        var iframe = $('<iframe name="upload_iframe">');
+        iframe.attr("id", "upload_iframe");
+        iframe.attr("name", "upload_iframe");
+        iframe.attr("width", "0");
+        iframe.attr("height", "0");
+        iframe.attr("border", "0");
+        iframe.attr("style", "width: 0; height: 0; border: none;");
 
         var self = this;
-        this.el.parentNode.appendChild(iframe);
+        this.$el.parent().append(iframe);
         this.$el.attr('target', 'upload_iframe');
 
         var iframeId = document.getElementById("upload_iframe");
